@@ -23,7 +23,7 @@ Example Config:
           {"NPRNewsIntent": {}}
       ],
       "time": "06:45"
-    },
+    }
   }
 ```
 
