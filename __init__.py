@@ -25,13 +25,12 @@ class EventSkill(ScheduledSkill):
         self.waiting = True
 
     def initialize(self):
-        print 'INITIALIZE ', self.name
         self.times = []
         self.events = self.config
 
         for e in self.events:
             self.register_vocabulary(e, 'EventKeyword')
-            print e
+            logger.debug(e)
             if 'time' in self.events[e]:
                 self.add_event(e)
 
@@ -65,7 +64,6 @@ class EventSkill(ScheduledSkill):
             self.times.reverse()
 
     def ready_to_continue(self, message):
-        print "!!!!!!!!!!!!!!speech is done"
         self.waiting = False
 
     def repeat(self, event):
@@ -74,7 +72,6 @@ class EventSkill(ScheduledSkill):
     def execute_event(self, event):
         for a in self.events[event]['actions']:
             self.waiting = True
-            print a
             for key in a:
                 self.emitter.emit(Message(key, a[key]))
             timeout = 0
@@ -83,7 +80,6 @@ class EventSkill(ScheduledSkill):
 
     def notify(self, timestamp, event):
 
-        print event, self.config[event]
         self.execute_event(event)
         self.repeat(event)
         self.schedule()
@@ -92,7 +88,7 @@ class EventSkill(ScheduledSkill):
         if len(self.times) > 0:
             return [self.times.pop()]
         else:
-            print 'No further events'
+            logger.debug('No further events')
             return []
 
     def schedule(self):
@@ -103,7 +99,7 @@ class EventSkill(ScheduledSkill):
             t, event = times[0]
             now = self.get_utc_time()
             delay = max(float(t) - now, 1)
-            print 'starting event in ' + str(delay)
+            logger.debug('starting event in ' + str(delay))
             self.timer = Timer(delay, self.notify, [t, event])
             self.start()
 
