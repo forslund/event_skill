@@ -49,17 +49,20 @@ class EventSkill(ScheduledSkill):
 
         self.emitter.on('recognizer_loop:audio_output_end',
                         self.ready_to_continue)
-        print self.times 
         self.schedule()
     
     def add_event(self, event):
         now = self.get_utc_time()
-        time = self.get_utc_time(self.events[event]['time'])
-        if time <= now:
-            time += self.SECONDS_PER_DAY
-        self.times.append((time, event))
-        self.times = sorted(self.times)
-        self.times.reverse()
+        conf_times = self.events[event]['time']
+        if not isinstance(conf_times, list):
+            conf_times = [conf_times]
+        for t in conf_times:
+            time = self.get_utc_time(t)
+            if time <= now:
+                time += self.SECONDS_PER_DAY
+            self.times.append((time, event))
+            self.times = sorted(self.times)
+            self.times.reverse()
 
     def ready_to_continue(self, message):
         print "!!!!!!!!!!!!!!speech is done"
