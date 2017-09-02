@@ -28,7 +28,7 @@ class EventSkill(ScheduledSkill):
             self.register_vocabulary(e, 'EventKeyword')
             logger.debug(e)
             if 'time' in self.skill_events[e]:
-                self.add_event(e)
+                self.add_skill_event(e)
 
         intent = IntentBuilder('EventIntent') \
             .require('EventKeyword') \
@@ -45,7 +45,7 @@ class EventSkill(ScheduledSkill):
                         self.ready_to_continue)
         self.schedule()
 
-    def add_event(self, event):
+    def add_skill_event(self, event):
         now = self.get_utc_time()
         conf_times = self.skill_events[event]['time']
         if not isinstance(conf_times, list):
@@ -62,7 +62,7 @@ class EventSkill(ScheduledSkill):
         self.waiting = False
 
     def repeat(self, event):
-        self.add_event(event)
+        self.add_skill_event(event)
 
     def execute_event(self, event):
         for a in self.skill_events[event]['actions']:
